@@ -1,0 +1,426 @@
+basePath: /api
+definitions:
+  contact.Contact:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      isDeleted:
+        type: boolean
+      name:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+      uuid:
+        type: string
+      value:
+        type: string
+    type: object
+  contact.CreateContactRequest:
+    properties:
+      name:
+        type: string
+      url:
+        description: Optional
+        type: string
+      value:
+        type: string
+    type: object
+  education.CreateEducationRequest:
+    properties:
+      degree:
+        type: string
+      endDate:
+        type: string
+      institution:
+        type: string
+      major:
+        type: string
+      startDate:
+        type: string
+    required:
+    - degree
+    - endDate
+    - institution
+    - major
+    - startDate
+    type: object
+  education.Education:
+    properties:
+      createdAt:
+        type: string
+      degree:
+        type: integer
+      id:
+        type: integer
+      institution:
+        type: string
+      isDeleted:
+        type: boolean
+      major:
+        type: string
+      updatedAt:
+        type: string
+      uuid:
+        type: string
+    type: object
+  education.PartialUpdateEducationRequest:
+    properties:
+      degree:
+        description: Optional
+        type: string
+      endDate:
+        description: Optional
+        type: string
+      institution:
+        description: Optional
+        type: string
+      major:
+        description: Optional
+        type: string
+      startDate:
+        description: Optional
+        type: string
+    type: object
+  skill.CreateSkillRequest:
+    properties:
+      name:
+        type: string
+      startDate:
+        type: string
+      type:
+        type: string
+    required:
+    - name
+    - startDate
+    - type
+    type: object
+  skill.PartialUpdateSkillRequest:
+    properties:
+      name:
+        description: Optional
+        type: string
+      startDate:
+        description: Optional
+        type: string
+      type:
+        description: Optional
+        type: string
+    type: object
+  skill.Skill:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      isDeleted:
+        type: boolean
+      name:
+        type: string
+      type:
+        type: integer
+      updatedAt:
+        type: string
+      uuid:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API documentation for the Portfolio project
+  termsOfService: http://swagger.io/terms/
+  title: Portfolio API
+  version: "1.0"
+paths:
+  /contacts:
+    get:
+      description: List all contacts in the database
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - collectionFormat: csv
+        description: Ordering
+        in: query
+        items:
+          enum:
+          - CREATED_AT
+          - -CREATED_AT
+          - NAME
+          - -NAME
+          type: string
+        name: ordering
+        type: array
+      - description: Name insensitive contains
+        in: query
+        name: nameIContains
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/contact.Contact'
+      summary: List all contacts
+      tags:
+      - contacts
+    post:
+      description: Add a new contact to the database
+      parameters:
+      - description: Contact data
+        in: body
+        name: contact
+        required: true
+        schema:
+          $ref: '#/definitions/contact.CreateContactRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/contact.Contact'
+      summary: Create a new contact
+      tags:
+      - contacts
+  /educations:
+    get:
+      description: List all education records from the database
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      - collectionFormat: csv
+        description: Degrees
+        in: query
+        items:
+          enum:
+          - BACHELORS
+          - MASTERS
+          - DOCTORATE
+          type: string
+        name: degrees
+        type: array
+      - collectionFormat: csv
+        description: Ordering
+        in: query
+        items:
+          enum:
+          - START_DATE
+          - -START_DATE
+          - END_DATE
+          - -END_DATE
+          - CREATED_AT
+          - -CREATED_AT
+          - DEGREE
+          - -DEGREE
+          type: string
+        name: ordering
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/education.Education'
+            type: array
+      summary: List all education records
+      tags:
+      - educations
+    post:
+      description: Add a new education record to the database
+      parameters:
+      - description: Education data
+        in: body
+        name: education
+        required: true
+        schema:
+          $ref: '#/definitions/education.CreateEducationRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/education.Education'
+      summary: Create a new education record
+      tags:
+      - educations
+  /educations/{uuid}/:
+    delete:
+      description: Soft delete an education record from the database
+      parameters:
+      - description: Education UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete an education record
+      tags:
+      - educations
+    patch:
+      description: Partially update an education record in the database
+      parameters:
+      - description: Education UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Education data
+        in: body
+        name: education
+        required: true
+        schema:
+          $ref: '#/definitions/education.PartialUpdateEducationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/education.Education'
+      summary: Partially update an education record
+      tags:
+      - educations
+  /skills:
+    get:
+      description: Retrieve a list of skills from the database
+      parameters:
+      - description: Limit the number of results returned
+        in: query
+        name: limit
+        type: integer
+      - description: Offset the results returned
+        in: query
+        name: offset
+        type: integer
+      - description: Filter by start date greater than or equal to (YYYY-MM-DD)
+        in: query
+        name: startDateGTE
+        type: string
+      - description: Filter by start date less than or equal to (YYYY-MM-DD)
+        in: query
+        name: startDateLTE
+        type: string
+      - collectionFormat: csv
+        description: Filter by skill types (multi-select)
+        in: query
+        items:
+          enum:
+          - LANGUAGE
+          - FRAMEWORK
+          - CLOUD
+          type: string
+        name: types
+        type: array
+      - collectionFormat: csv
+        description: Order by fields (multi-select)
+        in: query
+        items:
+          enum:
+          - CREATED_AT
+          - -CREATED_AT
+          - NAME
+          - -NAME
+          - START_DATE
+          - -START_DATE
+          type: string
+        name: ordering
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/skill.Skill'
+            type: array
+      summary: List skills
+      tags:
+      - skills
+    post:
+      description: Add a new skill to the database
+      parameters:
+      - description: Skill data
+        in: body
+        name: skill
+        required: true
+        schema:
+          $ref: '#/definitions/skill.CreateSkillRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/skill.Skill'
+      summary: Create a new skill
+      tags:
+      - skills
+  /skills/{uuid}/:
+    delete:
+      description: Delete a skill from the database
+      parameters:
+      - description: Skill UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+      summary: Delete a skill
+      tags:
+      - skills
+    patch:
+      description: Partially update a skill in the database
+      parameters:
+      - description: Skill UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Skill data
+        in: body
+        name: skill
+        required: true
+        schema:
+          $ref: '#/definitions/skill.PartialUpdateSkillRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/skill.Skill'
+      summary: Partially update a skill
+      tags:
+      - skills
+swagger: "2.0"
